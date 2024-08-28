@@ -1,0 +1,216 @@
+apiVersion: v1
+data:
+  values.yaml: |
+    global:
+      SEP:
+        enabled: true
+      security:
+        policyBinding:
+          create: false
+      log:
+        schema: adp
+        streamingMethod: direct
+      registry:
+        imagePullPolicy: IfNotPresent
+    eric-cma-cm-mediator:
+      enabled: false
+    eric-cm-mediator:
+      enabled: true
+    eric-data-coordinator-zk:
+      resources:
+        datacoordinatorzk:
+          limits:
+            cpu: '1'
+            ephemeral-storage: 1Gi
+            memory: 1Gi
+          requests:
+            cpu: '0.2'
+            ephemeral-storage: 1Gi
+            memory: 1Gi
+    eric-data-message-bus-kf:
+      replicaCount: 4
+      persistence:
+        persistentVolumeClaim:
+          size: 250Gi
+      resources:
+        jmxexporter:
+          limits:
+            cpu: 1
+            memory: 1Gi
+          requests:
+            cpu: 50m
+            memory: 512Mi
+        messagebuskf:
+          limits:
+            cpu: 5
+            ephemeral-storage: 1Gi
+            memory: 5632Mi
+          requests:
+            cpu: 200m
+            ephemeral-storage: 1Gi
+            memory: 5632Mi
+      configurationOverrides:
+        fetch.max.bytes: '104857600'
+        log.segment.bytes: '10485760'
+      jmx:
+        enabled: true
+        enableRemote: false
+    eric-data-search-engine:
+      enabled: true
+      index_management:
+        enabled: true
+        policies:
+          - description: Remove eea logs older than 7 days or accumulated indices reach
+              100GB
+            indices:
+              - '*'
+            priority: 1
+            states:
+              - name: init
+                transitions:
+                  - condition: min_index_age=7d
+                    destination_state: delete
+                  - condition: min_size=100gb
+                    destination_state: delete
+              - name: delete
+                actions:
+                  - delete
+      jvmHeap:
+        master: 2048m
+        data: 2048m
+        ingest: 2048m
+      resources:
+        master:
+          limits:
+            cpu: 1
+            memory: 4Gi
+          requests:
+            cpu: 100m
+            memory: 4Gi
+        data:
+          limits:
+            cpu: 1.5
+            memory: 5Gi
+          requests:
+            cpu: 100m
+            memory: 5Gi
+        ingest:
+          limits:
+            cpu: 1
+            memory: 4Gi
+          requests:
+            cpu: 100m
+            memory: 4Gi
+      persistence:
+        data:
+          persistentVolumeClaim:
+            size: 100Gi
+      autoSetRequiredWorkerNodeSysctl: true
+    eric-eea-cma-cmm-data-document-database-pg:
+      enabled: false
+    eric-eea-cmm-data-document-database-pg:
+      enabled: true
+    eric-eea-fm-eric-data-message-bus-kf:
+      jmx:
+        enabled: true
+        enableRemote: false
+    eric-eea-fh-rest2kafka-proxy:
+      enabled: false
+    eric-eea-ingress-ctrl-applications:
+      resources:
+        contour:
+          limits:
+            cpu: 1000m
+          requests:
+            cpu: 50m
+      service:
+        annotations:
+          addressPoolName: pool-application
+    eric-eea-ingress-ctrl-oam:
+      resources:
+        contour:
+          limits:
+            cpu: 1000m
+          requests:
+            cpu: 50m
+      service:
+        annotations:
+          addressPoolName: pool0
+          sharedVIPLabel: eea-oam
+    eric-eea-ingress-ctrl-traffic:
+      resources:
+        contour:
+          limits:
+            cpu: 1000m
+          requests:
+            cpu: 50m
+      service:
+        annotations:
+          addressPoolName: pool0
+          sharedVIPLabel: eea-traffic
+    eric-lm-combined-server:
+      licenseServerClient:
+        licenseServer:
+          thrift:
+            host: 10.155.142.69
+    eric-fh-snmp-alarm-provider:
+      service:
+        annotations:
+          addressPoolName: pool0
+          sharedVIPLabel: eea-oam
+    eric-log-shipper:
+      resources:
+        logshipper:
+          limits:
+            cpu: 3000m
+            memory: 2000Mi
+          requests:
+            cpu: 100m
+            memory: 100Mi
+    eric-log-transformer:
+      egress:
+        syslog:
+          enabled: true
+          tls:
+            enabled: true
+          certificates:
+            asymmetricKeyCertificateName: log-transformer-https-client
+            trustedCertificateListName: log-transformer-external-ca
+          remoteHosts:
+            - host: 10.61.197.98
+              port: 5014
+          filter: "mutate {\n  replace => { \"message\" => \"%{message};cluster:CLUSTERNAME;spinnaker:SPINNAKERID;pipeline:PIPELINENAME\"\\ }\n}\n"
+    eric-pm-server:
+      authorizationProxy:
+        enabled: false
+      ingress:
+        enabled: false
+      resources:
+        eric-pm-server:
+          limits:
+            memory: 12Gi
+      server:
+        retention: 90d
+        persistentVolume:
+          size: 200Gi
+    eric-schema-registry-sr:
+      logshipper:
+        requests:
+          cpu: 20m
+          memory: 50Mi
+        limits:
+          cpu: '1'
+          memory: 1Gi
+      jmx:
+        enabled: false
+    eric-si-application-sys-info-handler:
+      asih:
+        applicationId: eric-eea
+    in-memory-eric-data-message-bus-kf:
+      jmx:
+        enabled: true
+        enableRemote: false
+kind: ConfigMap
+metadata:
+  name: eric-eea-oam-services-values
+  namespace: eric-eea-ns

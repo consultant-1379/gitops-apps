@@ -1,0 +1,313 @@
+apiVersion: v1
+data:
+  values.yaml: |
+    global:
+      SEP:
+        enabled: true
+      security:
+        policyBinding:
+          create: false
+      log:
+        schema: adp
+        streamingMethod: direct
+      registry:
+        imagePullPolicy: IfNotPresent
+    eric-csm-p-ctr:
+      enabled: true
+    eric-csm-p-epg-ebm:
+      resources:
+        parser:
+          requests:
+            cpu: 100m
+    eric-csm-p-pgw-u-ebm:
+      resources:
+        parser:
+          requests:
+            cpu: 100m
+    eric-csm-p-sgsn-mme-ebm:
+      resources:
+        parser:
+          requests:
+            cpu: 100m
+    eric-csm-st-ctr:
+      enabled: true
+      service:
+        externalPort: 31004
+        externalIPv4:
+          annotations:
+            addressPoolName: pool0
+            sharedVIPLabel: eea-csm
+    eric-csm-st-epg-ebm:
+      service:
+        externalPort: 31001
+        externalIPv4:
+          annotations:
+            addressPoolName: pool0
+            sharedVIPLabel: eea-csm
+      resources:
+        termination:
+          requests:
+            cpu: 100m
+    eric-csm-st-nr-ctr:
+      enabled: true
+      service:
+        externalPort: 31003
+        externalIPv4:
+          annotations:
+            addressPoolName: pool0
+            sharedVIPLabel: eea-csm
+      config:
+        numberOfPartitions: 1
+    eric-csm-st-pgw-u-ebm:
+      service:
+        externalPort: 31002
+        externalIPv4:
+          annotations:
+            addressPoolName: pool0
+            sharedVIPLabel: eea-csm
+      resources:
+        termination:
+          requests:
+            cpu: 100m
+    eric-csm-st-sgsn-mme-ebm:
+      service:
+        externalPort: 31000
+        externalIPv4:
+          annotations:
+            addressPoolName: pool0
+            sharedVIPLabel: eea-csm
+      resources:
+        termination:
+          requests:
+            cpu: 100m
+    eric-eea-ctum-p:
+      enabled: true
+    eric-eea-ctum-st:
+      enabled: true
+      service:
+        externalPort: 31005
+        externalIPv4:
+          annotations:
+            addressPoolName: pool0
+            sharedVIPLabel: eea-csm
+    eric-eea-privacy-service-eric-data-kvdb-ag:
+      probes:
+        server:
+          livenessProbe:
+            initialDelaySeconds: 300
+    eric-eea-refdata-provisioner:
+      ingress:
+        hostname: refdata-provisioner.eea.company-domain.com
+    eric-oss-correlator:
+      networkServices:
+        AlarmHandlerFI:
+          addresses:
+            - eric-fh-alarm-handler:6006
+          secretName: eric-oss-correlator-ah-fi-api-client-certificate
+          caSecretName: eric-sec-sip-tls-trusted-root-cert
+          certType: internal
+        AdpKafka:
+          addresses:
+            - eric-data-message-bus-kf-client:9093
+          secretName: eric-oss-correlator-kafka-cli-cert
+          caSecretName: eric-sec-sip-tls-trusted-root-cert
+          certType: internal
+        AdpSchemaRegistry:
+          addresses:
+            - https://eric-schema-registry-sr:8082
+          secretName: eric-oss-correlator-sr-cli-cert
+          caSecretName: eric-sec-sip-tls-trusted-root-cert
+          certType: internal
+        FmAdpKafka:
+          addresses:
+            - eric-eea-fm-eric-data-message-bus-kf-client:9093
+          secretName: eric-oss-correlator-kafka-fm-cli-cert
+          caSecretName: eric-sec-sip-tls-trusted-root-cert
+          certType: internal
+      config:
+        shardCount: 256
+        memoryRequestAmount: 200
+        corr:
+          symptom_detection:
+            failed attach:
+              weight: 100
+              category: 'access'
+            failed create bearer:
+              weight: 50
+              category: 'session'
+            failed create pdu session:
+              weight: 50
+              category: 'session'
+            failed create session:
+              weight: 50
+              category: 'session'
+            failed delete bearer:
+              weight: 50
+              category: 'session'
+            failed delete pdu session:
+              weight: 50
+              category: 'session'
+            failed delete session:
+              weight: 50
+              category: 'session'
+            failed deregistration:
+              weight: 50
+              category: 'access'
+            failed detach:
+              weight: 100
+              category: 'access'
+            failed initial registration:
+              weight: 50
+              category: 'access'
+            failed modify bearer:
+              weight: 50
+              category: 'session'
+            failed mru:
+              weight: 50
+              category: 'session'
+            failed n2 handover:
+              weight: 10
+              category: 'mobility'
+            failed pfcp session deletion:
+              weight: 50
+              category: 'session'
+            failed pfcp session establishment:
+              weight: 50
+              category: 'session'
+            failed pfcp session modification:
+              weight: 50
+              category: 'session'
+            failed s1 handover:
+              weight: 10
+              category: 'mobility'
+            failed service request:
+              weight: 50
+              category: 'session'
+            failed tau:
+              weight: 10
+              category: 'mobility'
+            failed update bearer:
+              weight: 50
+              category: 'session'
+            failed update pdu session:
+              weight: 50
+              category: 'session'
+            failed x2 handover:
+              weight: 10
+              category: 'mobility'
+            failed xn handover:
+              weight: 10
+              category: 'mobility'
+            failed_nr_drb_establishment:
+              weight: 10
+              category: 'mobility'
+            failed_nr_drb_release:
+              weight: 10
+              category: 'mobility'
+            failed_nr_n2_ho:
+              weight: 10
+              category: 'mobility'
+            failed_nr_n2_ho_preparation:
+              weight: 10
+              category: 'mobility'
+            failed_nr_pdu_session_establishment:
+              weight: 50
+              category: 'session'
+            failed_nr_pdu_session_resource_release:
+              weight: 50
+              category: 'session'
+            failed_nr_ue_context_establishment:
+              weight: 50
+              category: 'session'
+            failed_nr_ue_context_release:
+              weight: 50
+              category: 'session'
+            failed_nr_xn_ho_path_switch:
+              weight: 10
+              category: 'mobility'
+            failed_nr_xn_ho_preparation:
+              weight: 10
+              category: 'mobility'
+            failed_sa_5gs_eps_handover:
+              weight: 10
+              category: 'mobility'
+            failed_sa_5gs_eps_ho:
+              weight: 10
+              category: 'mobility'
+            failed_sa_n2_ho:
+              weight: 10
+              category: 'mobility'
+            failed_sa_nw_init_service_req_cm_con:
+              weight: 50
+              category: 'session'
+            failed_sa_nw_init_service_req_cm_idle:
+              weight: 50
+              category: 'session'
+            failed_sa_nw_initiated_service_request_cm_connected:
+              weight: 50
+              category: 'session'
+            failed_sa_nw_initiated_service_request_cm_idle:
+              weight: 50
+              category: 'session'
+            failed_sa_pdu_session_establishment:
+              weight: 50
+              category: 'session'
+            failed_sa_ue_init_service_req:
+              weight: 50
+              category: 'session'
+            failed_sa_ue_initiated_service_request:
+              weight: 50
+              category: 'session'
+            failed_sa_xn_ho:
+              weight: 10
+              category: 'mobility'
+      pgwu:
+        serviceidMap: |
+          #servic_id;service_provider;functionality;protocol;5G_preferred_service
+          amazon_prime_video;Amazon;video;;1
+          app100;Google;video;;1
+          app_dns_1;ICANN;dns;;0
+          app_dns_2;ICANN;dns;;0
+          app_pop3_1;;mail;;0
+          app_tls_1;;;;0
+          apple-music;Apple-music;music;;0
+          spotify;Spotify;music;;0
+          facebook;Facebook;social;;0
+          youtube_serv_video;Youtube;video;;1
+          google-talk;Google-talk;chat;;0
+          whatsapp;Whatsapp;chat;;0
+          youtube;Youtube;video;;1
+          facebook_serv_video;Facebook;video;;1
+          instagram;Instagram;social;;0
+      eric-oss-correlator-redis:
+        resources:
+          redis-controller:
+            requests:
+              memory: 256Mi
+              cpu: 200m
+            limits:
+              memory: 1024Mi
+              cpu: 1
+          redis:
+            requests:
+              memory: 256Mi
+              cpu: 200m
+            limits:
+              memory: 1024Mi
+              cpu: 1
+      resources:
+        correlator-node:
+          requests:
+            memory: 16384Mi
+            cpu: 300m
+          limits:
+            memory: 65536Mi
+            cpu: 6
+        redis-availability:
+          limits:
+            memory: 1024Mi
+            cpu: 1
+kind: ConfigMap
+metadata:
+  name: eric-eea-csm-correlator-services-values
+  namespace: eric-eea-ns

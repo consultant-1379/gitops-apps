@@ -1,0 +1,13 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: eric-eea-oam-services
+  namespace: eric-eea-ns
+spec:
+  serviceAccountName: eric-eea-poc
+  interval: 1m0s
+  path: apps/dl380x4236/eric-eea-ns/eric-eea/deployment/eric-eea-oam-services/eric-eea-oam-services
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: eric-eea-poc-repo

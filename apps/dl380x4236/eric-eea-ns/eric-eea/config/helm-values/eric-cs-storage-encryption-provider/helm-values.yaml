@@ -1,0 +1,21 @@
+apiVersion: v1
+data:
+  values.yaml: |
+    global:
+      security:
+        policyBinding:
+          create: false
+    storageClasses:
+      - name: "eric-eea-encrypted-storage-class"
+        backingStorageClass: ""
+        backingVolumeMode: "Block"
+      - name: "eric-data-object-storage-mn-class"
+        backingStorageClass: ""
+        backingVolumeMode: "Block"
+      - name: "eric-eea-analytical-processing-database-class"
+        backingStorageClass: ""
+        backingVolumeMode: "Block"
+kind: ConfigMap
+metadata:
+  name: eric-cs-storage-encryption-provider-values
+  namespace: eric-eea-ns

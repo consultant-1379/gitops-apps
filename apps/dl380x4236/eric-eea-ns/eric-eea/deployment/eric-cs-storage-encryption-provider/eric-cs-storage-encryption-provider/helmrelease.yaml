@@ -1,0 +1,22 @@
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: eric-cs-storage-encryption-provider
+  namespace: eric-eea-ns
+spec:
+  chart:
+    spec:
+      chart: eric-cs-storage-encryption-provider
+      sourceRef:
+        kind: HelmRepository
+        name: sep-repo
+      version: 5.2.0+33
+  interval: 1m0s
+  serviceAccountName: eric-eea-poc
+  valuesFrom:
+  - kind: ConfigMap
+    name: eric-cs-storage-encryption-provider-values
+    valuesKey: values.yaml
+  - kind: ConfigMap
+    name: shared-values
+    valuesKey: values.yaml

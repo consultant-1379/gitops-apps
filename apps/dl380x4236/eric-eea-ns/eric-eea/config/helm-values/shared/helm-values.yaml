@@ -1,0 +1,20 @@
+apiVersion: v1
+data:
+  values.yaml: |
+    global:
+      registry:
+        pullSecret: arm-pullsecret
+      pullSecret: arm-pullsecret
+      ericsson:
+        licensing:
+          licenseDomains:
+            - productType: Expert_Analytics
+              swltId: STB-Expert_Analytics-1
+              customerId: 800141
+          nelsConfiguration:
+            primary:
+              hostname: 10.155.142.69
+kind: ConfigMap
+metadata:
+  name: shared-values
+  namespace: eric-eea-ns

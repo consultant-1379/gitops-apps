@@ -1,0 +1,23 @@
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: HelmRepository
+metadata:
+  name: eea-internal
+  namespace: eric-eea-ns
+spec:
+  interval: 1m0s
+  provider: generic
+  url: https://arm.seli.gic.ericsson.se/artifactory/proj-eea-ci-internal-helm/
+  secretRef:
+    name: helm-repo-eea-int
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: HelmRepository
+metadata:
+  name: sep-repo
+  namespace: eric-eea-ns
+spec:
+  interval: 1m0s
+  provider: generic
+  url: https://arm.sero.gic.ericsson.se/artifactory/proj-adp-rs-storage-encr-released-helm/
+  secretRef:
+    name: helm-repo-adp

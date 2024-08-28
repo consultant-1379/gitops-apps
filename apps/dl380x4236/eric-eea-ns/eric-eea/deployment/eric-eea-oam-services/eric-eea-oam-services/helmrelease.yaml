@@ -1,0 +1,25 @@
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: eric-eea-oam-services
+  namespace: eric-eea-ns
+spec:
+  chart:
+    spec:
+      chart: eric-eea-oam-services
+      sourceRef:
+        kind: HelmRepository
+        name: eea-internal
+      version: 23.45.0-9
+  interval: 1m0s
+  serviceAccountName: eric-eea-poc
+  dependsOn:
+    - name: eric-cs-storage-encryption-provider
+  timeout: 30m
+  valuesFrom:
+  - kind: ConfigMap
+    name: eric-eea-oam-services-values
+    valuesKey: values.yaml
+  - kind: ConfigMap
+    name: shared-values
+    valuesKey: values.yaml

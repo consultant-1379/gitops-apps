@@ -1,0 +1,6 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- eric-cs-storage-encryption-provider-sync.yaml
+- eric-eea-csm-correlator-services-sync.yaml
+- eric-eea-oam-services-sync.yaml
